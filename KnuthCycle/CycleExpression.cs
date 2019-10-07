@@ -150,14 +150,9 @@ namespace KnuthCycle
             for (int i = 0; i < marked.Length; i++)
             {
                 if (marked[i] == '(')
-                {
                     letter = Tag(marked[i + 1]);
-                    marked[i] = '(';
-                }
                 if (marked[i] == ')')
-                {
                     marked[i] = letter;
-                }
             }
             return marked;
         }
