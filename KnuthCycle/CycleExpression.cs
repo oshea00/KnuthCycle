@@ -62,18 +62,14 @@ namespace KnuthCycle
             int idx = cycleExpr.IndexOf(c);
             if (idx == -1)
                 return c;
-            if (cycleExpr[idx + 1] != ')')
-            {
-                return cycleExpr[idx + 1];
-            }
-            else
+            if (cycleExpr[idx + 1] == ')')
             {
                 while (cycleExpr[idx] != '(')
                 {
                     idx--;
                 }
-                return cycleExpr[idx + 1];
             }
+            return cycleExpr[idx + 1];
         }
 
         public static string Permute(string cycleExpr, string input)
