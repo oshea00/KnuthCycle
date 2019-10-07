@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -7,6 +8,55 @@ namespace KnuthCycle
 {
     public class CycleExpression
     {
+        public static string Multiply(string expr)
+        {
+            if (!IsValidExpression(expr))
+                throw new Exception("Invalid cycle notation");
+
+            char[] arrExpr = InitExpression(expr);
+            var sb = new StringBuilder();
+
+            char start = '\0';
+            char current = '\0';
+            int next = 0;
+            bool cycleFound = false;
+
+            while ((next = IndexOfFirstUntagged(arrExpr)) > 0)
+            {
+                cycleFound = false;
+                sb.Append('(');
+                sb.Append(arrExpr[next]);
+                start = arrExpr[next];
+                arrExpr[next] = Tag(start);
+                while (!cycleFound)
+                {
+                    current = arrExpr[next + 1];
+                    while (true)
+                    {
+                        if ((next = IndexOfMatch(arrExpr, next + 1, current)) > 0)
+                        {
+                            arrExpr[next] = Tag(current);
+                            break;
+                        }
+
+                        if (!AreEqual(current, start))
+                        {
+                            sb.Append(current);
+                            next = 0;
+                            continue;
+                        }
+                        cycleFound = true;
+                        sb.Append(')');
+                        break;
+                    }
+                }
+                // Pop singleton cycles from output
+                if (sb[sb.Length - 3] == '(')
+                    sb.Remove(sb.Length - 3, 3);
+            }
+            return sb.ToString().ToLower();
+        }
+
         public static char Permute(string cycleExpr, char c)
         {
             int idx = cycleExpr.IndexOf(c);
@@ -58,6 +108,25 @@ namespace KnuthCycle
             return false;
         }
 
+        public static string Cannonicalize(string expr)
+        {
+            var cannonExpr = string.Join("", GetCannonCycles(expr));
+            return cannonExpr;
+        }
+
+
+        protected static string[] GetCannonCycles(string expr)
+        {
+            var toks = expr.Split('(');
+            var cycles = new string[toks.Length - 1];
+            for (int i = 0; i < cycles.Length; i++)
+            {
+                var c = toks[i + 1].Substring(0, toks[i + 1].Length - 1);
+                cycles[i] = (c + c).Substring(c.IndexOf(c.Max()), c.Length);
+            }
+            return cycles.OrderBy(n => n).Select(c => "(" + c + ")").ToArray();
+        }
+
         protected static int IndexOfFirstUntagged(char[] marked)
         {
             for (int i=0; i < marked.Length; i++)
@@ -94,54 +163,6 @@ namespace KnuthCycle
             return char.ToUpper(c);
         }
 
-        public static string Multiply(string expr)
-        {
-            if (!IsValidExpression(expr))
-                throw new Exception("Invalid cycle notation");
-
-            char[] arrExpr = InitExpression(expr);
-            var sb = new StringBuilder();
-
-            char start = '\0';
-            char current = '\0';
-            int next = 0;
-            bool cycleFound = false;
-
-            while ((next = IndexOfFirstUntagged(arrExpr)) > 0)
-            {
-                cycleFound = false;
-                sb.Append('(');
-                sb.Append(arrExpr[next]);
-                start = arrExpr[next];
-                arrExpr[next] = Tag(start);
-                while (!cycleFound)
-                {
-                    current = arrExpr[next+1];
-                    while (true)
-                    {
-                        if ((next = IndexOfMatch(arrExpr, next+1, current)) > 0)
-                        {
-                            arrExpr[next] = Tag(current);
-                            break;
-                        }
-                        
-                        if (!AreEqual(current,start))
-                        {
-                            sb.Append(current);
-                            next = 0;
-                            continue;
-                        }
-                        cycleFound = true;
-                        sb.Append(')');
-                        break;
-                    }
-                }
-                // Pop singleton cycles from output
-                if (sb[sb.Length - 3] == '(')
-                    sb.Remove(sb.Length - 3,3);
-            }
-            return sb.ToString().ToLower();
-        }
 
         protected static char[] InitExpression(string expr)
         {
@@ -156,6 +177,5 @@ namespace KnuthCycle
             }
             return marked;
         }
-
     }
 }

@@ -38,8 +38,8 @@ namespace KnuthCycle.Test
             return CycleExpression.IsValidExpression(expr);
         }
 
-        [TestCase("(adg)(ceb)", ExpectedResult = "(adg)(ceb)", Description = "Simplified Already")]
-        [TestCase("(acfg)(bcd)(aed)(fade)(bgfae)", ExpectedResult = "(adg)(ceb)", Description = "Complicated")]
+        [TestCase("(adg)(ceb)", ExpectedResult = "(adg)(ceb)", Description = "Disjoint cycles")]
+        [TestCase("(acfg)(bcd)(aed)(fade)(bgfae)", ExpectedResult = "(adg)(ceb)", Description = "Non-Disjoint cycles")]
         public string CanMultiply(string expr)
         {
             return CycleExpression.Multiply(expr);
@@ -88,6 +88,20 @@ namespace KnuthCycle.Test
         public void CanTag()
         {
             Assert.AreEqual('A', Tag('a'));
+        }
+
+        [Test]
+        public void CanCannonicalize()
+        {
+            Assert.AreEqual("(ebc)(gad)", Cannonicalize("(adg)(ceb)"));
+        }
+
+        [Test]
+        public void CannonicalAreEquivalent()
+        {
+            var expr = "(ebc)(gad)";
+            var input = "abcdef";
+            Assert.AreEqual(Permute(expr, input), Permute(Cannonicalize(expr), input));
         }
 
     }
