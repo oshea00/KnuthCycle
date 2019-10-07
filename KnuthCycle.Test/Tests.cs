@@ -99,7 +99,7 @@ namespace KnuthCycle.Test
         [Test]
         public void CannonicalAreEquivalent()
         {
-            var expr = "(ebc)(gad)";
+            var expr = "(adg)(ceb)";
             var input = "abcdef";
             Assert.AreEqual(Permute(expr, input), Permute(Cannonicalize(expr), input));
         }
