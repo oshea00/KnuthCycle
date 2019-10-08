@@ -5,8 +5,8 @@ namespace KnuthCycle.Test
 {
     class Tests : CycleExpression
     {
-        [TestCase("(acf)",'a', ExpectedResult = 'c', Description = "Loopback lookup")]
-        [TestCase("(acf)",'f', ExpectedResult = 'a', Description = "Simple lookup")]
+        [TestCase("(acf)",'a', ExpectedResult = 'c', Description = "Simple lookup")]
+        [TestCase("(acf)",'f', ExpectedResult = 'a', Description = "Loopback lookup")]
         public char CanPermute(string expr, char c)
         {
             return CycleExpression.Permute(expr, c);
